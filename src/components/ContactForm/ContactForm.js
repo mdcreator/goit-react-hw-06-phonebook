@@ -1,64 +1,64 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addContact } from '../../redux/contacts/contacts-actions';
 
 import s from './ContactForm.module.css';
 
-class ContactForm extends Component {
-  static propTypes = {
-    onSubmit: PropTypes.func.isRequired,
+export default function ContactForm() {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+  const dispatch = useDispatch();
+
+  const handleNameChange = ({ target }) => {
+    setName(target.value.trimLeft());
   };
 
-  state = {
-    name: '',
-    number: '',
+  const handleNumberChange = ({ target }) => {
+    setNumber(target.value.trimLeft());
   };
 
-  handleInputChange = e => {
-    const { name, value } = e.currentTarget;
-    this.setState({ [name]: value });
-  };
-
-  handleOnSubmit = e => {
+  const handleOnSubmit = e => {
     e.preventDefault();
-    this.props.onSubmit(this.state);
-    this.reset();
+    if (name === '') {
+      alert('Name required');
+      return;
+    }
+    if (number === '') {
+      alert('Name required');
+      return;
+    }
+    dispatch(addContact({ name, number }));
+    setName('');
+    setNumber('');
   };
 
-  reset = () => {
-    this.setState({ name: '', number: '' });
-  };
+  return (
+    <form className={s.form} onSubmit={handleOnSubmit}>
+      <div className={s.formField}>
+        <label className={s.formLabel}>Name</label>
+        <input
+          className={s.formInput}
+          type="text"
+          placeholder=""
+          name="name"
+          value={name}
+          onChange={handleNameChange}
+        />
+      </div>
 
-  render() {
-    return (
-      <form className={s.form} onSubmit={this.handleOnSubmit}>
-        <div className={s.formField}>
-          <label className={s.formLabel}>Name</label>
-          <input
-            className={s.formInput}
-            type="text"
-            placeholder=""
-            name="name"
-            value={this.state.name}
-            onChange={this.handleInputChange}
-          />
-        </div>
+      <div className={s.formField}>
+        <label className={s.formLabel}>Number</label>
+        <input
+          className={s.formInput}
+          type="text"
+          placeholder=""
+          name="number"
+          value={number}
+          onChange={handleNumberChange}
+        />
+      </div>
 
-        <div className={s.formField}>
-          <label className={s.formLabel}>Number</label>
-          <input
-            className={s.formInput}
-            type="text"
-            placeholder=""
-            name="number"
-            value={this.state.number}
-            onChange={this.handleInputChange}
-          />
-        </div>
-
-        <button type="submit">Add contact</button>
-      </form>
-    );
-  }
+      <button type="submit">Add contact</button>
+    </form>
+  );
 }
-
-export default ContactForm;
